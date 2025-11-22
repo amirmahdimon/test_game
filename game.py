@@ -1,11 +1,13 @@
 def print_board(board):
-    """Prints the 3x3 tic-tac-toe board."""
+    """Prints the 3x3 tic-tac-toe board with a more detailed design."""
     print("\n")
-    print(f" {board[0]} | {board[1]} | {board[2]} ")
-    print("---|---|---")
-    print(f" {board[3]} | {board[4]} | {board[5]} ")
-    print("---|---|---")
-    print(f" {board[6]} | {board[7]} | {board[8]} ")
+    print("╔═══╦═══╦═══╗")
+    print(f"║ {board[0]} ║ {board[1]} ║ {board[2]} ║")
+    print("╠═══╬═══╬═══╣")
+    print(f"║ {board[3]} ║ {board[4]} ║ {board[5]} ║")
+    print("╠═══╬═══╬═══╣")
+    print(f"║ {board[6]} ║ {board[7]} ║ {board[8]} ║")
+    print("╚═══╩═══╩═══╝")
     print("\n")
 
 def check_win(board, player):
@@ -31,17 +33,18 @@ def get_player_move(board, player):
     """Gets a valid move from the current player."""
     while True:
         try:
-            move_str = input(f"Player {player}, enter your move (1-9): ")
+            prompt = f"PLAYER {player}'s TURN | Enter a number (1-9) > "
+            move_str = input(prompt)
             move = int(move_str)
             if 1 <= move <= 9:
                 if board[move - 1].isdigit():
                     return move - 1
                 else:
-                    print("This spot is already taken. Please choose another one.")
+                    print("🚫 That spot is already taken! Try another one.")
             else:
-                print("Invalid input. Please enter a number between 1 and 9.")
+                print("⚠️  Invalid number. Please enter a number between 1 and 9.")
         except ValueError:
-            print("Invalid input. Please enter a number.")
+            print("⚠️  Invalid input. Please enter a number.")
 
 def main():
     """Main function to run the Tic Tac Toe game loop."""
@@ -49,7 +52,9 @@ def main():
     current_player = "X"
     game_is_running = True
 
-    print("Welcome to Tic Tac Toe!")
+    print("\n**************************")
+    print("* WELCOME TO TIC TAC TOE *")
+    print("**************************\n")
 
     while game_is_running:
         print_board(board)
@@ -59,11 +64,19 @@ def main():
 
         if check_win(board, current_player):
             print_board(board)
-            print(f"Congratulations! Player {current_player} wins!")
+            print("**************************")
+            print("*       GAME OVER        *")
+            win_message = f"PLAYER {current_player} WINS! 🎉"
+            print(f"* {win_message:^22} *")
+            print("**************************")
             game_is_running = False
         elif check_tie(board):
             print_board(board)
-            print("The game is a tie!")
+            print("**************************")
+            print("*       GAME OVER        *")
+            tie_message = "IT'S A TIE!"
+            print(f"* {tie_message:^22} *")
+            print("**************************")
             game_is_running = False
         else:
             # Switch to the other player
