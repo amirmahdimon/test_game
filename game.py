@@ -6,7 +6,7 @@ def print_board(board):
     print(f"A ║ {board[0]} ║ {board[1]} ║ {board[2]} ║")
     print("  ╠═══╬═══╬═══╣")
     print(f"B ║ {board[3]} ║ {board[4]} ║ {board[5]} ║")
-    print("  ╠═══╬═══╬═══╣")
+    print("  ╠═══╬═══╣")
     print(f"C ║ {board[6]} ║ {board[7]} ║ {board[8]} ║")
     print("  ╚═══╩═══╩═══╝")
     print("\n")
@@ -15,11 +15,11 @@ def check_win(board, player):
     """Checks if the current player has won."""
     win_conditions = [
         # Rows
-        [0, 1, 2], [3, 4, 5], [6, 7, 8],
+        (0, 1, 2), (3, 4, 5), (6, 7, 8),
         # Columns
-        [0, 3, 6], [1, 4, 7], [2, 5, 8],
+        (0, 3, 6), (1, 4, 7), (2, 5, 8),
         # Diagonals
-        [0, 4, 8], [2, 4, 6]
+        (0, 4, 8), (2, 4, 6)
     ]
     for condition in win_conditions:
         if all(board[i] == player for i in condition):
@@ -58,10 +58,6 @@ def get_player_move(board, player):
                 print("⚠️  Invalid input format. Please enter a row and a column (e.g., A1).")
         except ValueError:
             print("⚠️  Invalid input. Please enter a valid cell.")
-
-def power(a, b):
-    """Calculates the power of a number."""
-    return a ** b
 
 def main():
     """Main function to run the Tic Tac Toe game loop."""
