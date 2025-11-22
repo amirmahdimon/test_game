@@ -13,31 +13,36 @@ def create_gui(board_size, board, current_player, game_is_running, handle_move, 
     window = tk.Tk()
     window.title("Tic Tac Toe")
     
-    button_size = 5 # Adjust this value for button size
-    button_font_size = 40 - (board_size - 3) * 5 # Adjust font size based on board size
-    
-    window_size = 300 + (board_size - 3) * 50
+    # Adjust button size and font size dynamically
+    base_button_size = 5
+    base_button_font_size = 40
+    button_size = base_button_size + (board_size - 3) * 2 # Increase button size for larger boards
+    button_font_size = base_button_font_size - (board_size - 3) * 10 # Adjust font size based on board size
+
+    # Adjust window size dynamically
+    base_window_size = 300
+    window_size = base_window_size + (board_size - 3) * 100
     window.geometry(f"{window_size}x{window_size + 50}")
     window.resizable(False, False)
 
     frame_board = tk.Frame(window)
-    frame_board.pack(pady=10)
+    frame_board.pack(pady=20) # Increased padding
 
     buttons = []
     for i in range(board_size * board_size):
         row = i // board_size
         col = i % board_size
         button = tk.Button(frame_board, text=board[i] if board[i].isalpha() else "", 
-                           font=("Arial", button_font_size), width=button_size, height=1, 
+                           font=("Arial", button_font_size), width=button_size, height=2, # Increased height
                            command=lambda idx=i: handle_move(idx))
-        button.grid(row=row, column=col, padx=5, pady=5)
+        button.grid(row=row, column=col, padx=10, pady=10) # Increased padding
         buttons.append(button)
 
-    label_player = tk.Label(window, text=f"Player {current_player}'s Turn", font=("Arial", 16))
-    label_player.pack(pady=10)
+    label_player = tk.Label(window, text=f"Player {current_player}'s Turn", font=("Arial", 24)) # Increased font size
+    label_player.pack(pady=20) # Increased padding
 
-    button_restart = tk.Button(window, text="Restart Game", font=("Arial", 12), command=restart_game_callback)
-    button_restart.pack(pady=5)
+    button_restart = tk.Button(window, text="Restart Game", font=("Arial", 16), command=restart_game_callback) # Increased font size
+    button_restart.pack(pady=15) # Increased padding
 
     def update_display():
         for i in range(board_size * board_size):
