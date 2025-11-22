@@ -2,61 +2,91 @@ import tkinter as tk
 from tkinter import messagebox
 import sys
 
-# ANSI color codes
+# ANSI color codes (not directly used in GUI but good for context)
 COLOR_X = '\033[92m'  # Green
 COLOR_O = '\033[94m'  # Blue
 COLOR_RESET = '\033[0m'
 COLOR_SEPARATOR = '\033[90m' # Grey for separators
 
+# GUI Color Scheme
+GUI_BG_COLOR = "#2E3440"  # Dark background
+GUI_FG_COLOR = "#ECEFF4"  # Light text
+BUTTON_X_COLOR = "#A3BE8C" # Greenish for X
+BUTTON_O_COLOR = "#81A1C1" # Bluish for O
+BUTTON_DEFAULT_COLOR = "#4C566A" # Greyish for default
+BUTTON_HOVER_COLOR = "#5E81AC" # Lighter blue for hover
+LABEL_TURN_COLOR = "#ECEFF4" # Light text for turn label
+RESTART_BUTTON_BG = "#5E81AC" # Bluish for restart
+RESTART_BUTTON_FG = "#ECEFF4"
+
 def create_gui(board_size, board, current_player, game_is_running, handle_move, restart_game_callback):
-    """Creates the Tkinter GUI for the Tic Tac Toe game."""
+    """Creates the Tkinter GUI for the Tic Tac Toe game with enhanced design."""
     window = tk.Tk()
     window.title("Tic Tac Toe")
-    
+    window.configure(bg=GUI_BG_COLOR)
+
     # Adjust button size and font size dynamically
-    base_button_size = 5
-    base_button_font_size = 40
-    button_size = base_button_size + (board_size - 3) * 2 # Increase button size for larger boards
-    button_font_size = base_button_font_size - (board_size - 3) * 10 # Adjust font size based on board size
+    base_button_size = 6
+    base_button_font_size = 30
+    button_size = base_button_size + (board_size - 3) * 1
+    button_font_size = base_button_font_size - (board_size - 3) * 8
 
     # Adjust window size dynamically
-    base_window_size = 300
-    window_size = base_window_size + (board_size - 3) * 100
-    window.geometry(f"{window_size}x{window_size + 50}")
+    base_window_size_w = 400
+    base_window_size_h = 450
+    window_width = base_window_size_w + (board_size - 3) * 80
+    window_height = base_window_size_h + (board_size - 3) * 80
+    window.geometry(f"{window_width}x{window_height}")
     window.resizable(False, False)
 
-    frame_board = tk.Frame(window)
-    frame_board.pack(pady=20) # Increased padding
+    frame_board = tk.Frame(window, bg=GUI_BG_COLOR)
+    frame_board.pack(pady=20, padx=20)
 
     buttons = []
     for i in range(board_size * board_size):
         row = i // board_size
         col = i % board_size
-        button = tk.Button(frame_board, text=board[i] if board[i].isalpha() else "", 
-                           font=("Arial", button_font_size), width=button_size, height=2, # Increased height
+        button = tk.Button(frame_board, text="",
+                           font=("Segoe UI", button_font_size, "bold"),
+                           width=button_size, height=2,
+                           bg=BUTTON_DEFAULT_COLOR, fg=GUI_FG_COLOR,
+                           activebackground=BUTTON_HOVER_COLOR,
+                           activeforeground=GUI_FG_COLOR,
+                           relief=tk.RAISED, borderwidth=3,
                            command=lambda idx=i: handle_move(idx))
-        button.grid(row=row, column=col, padx=10, pady=10) # Increased padding
+        button.grid(row=row, column=col, padx=8, pady=8, sticky="nsew")
         buttons.append(button)
+        # Configure row and column weights for proper resizing if window were resizable
+        frame_board.grid_rowconfigure(row, weight=1)
+        frame_board.grid_columnconfigure(col, weight=1)
 
-    label_player = tk.Label(window, text=f"Player {current_player}'s Turn", font=("Arial", 24)) # Increased font size
-    label_player.pack(pady=20) # Increased padding
 
-    button_restart = tk.Button(window, text="Restart Game", font=("Arial", 16), command=restart_game_callback) # Increased font size
-    button_restart.pack(pady=15) # Increased padding
+    label_player = tk.Label(window, text=f"Player X's Turn", font=("Segoe UI", 20, "bold"), bg=GUI_BG_COLOR, fg=LABEL_TURN_COLOR)
+    label_player.pack(pady=10)
+
+    button_restart = tk.Button(window, text="Restart Game", font=("Segoe UI", 16, "bold"),
+                               command=restart_game_callback,
+                               bg=RESTART_BUTTON_BG, fg=RESTART_BUTTON_FG,
+                               activebackground=BUTTON_HOVER_COLOR, activeforeground=GUI_FG_COLOR,
+                               relief=tk.RAISED, borderwidth=2)
+    button_restart.pack(pady=15)
 
     def update_display():
+        """Updates the GUI elements to reflect the current game state."""
         for i in range(board_size * board_size):
             button_text = board[i]
             if button_text == "X":
-                button_color = "green"
+                button_color = BUTTON_X_COLOR
             elif button_text == "O":
-                button_color = "blue"
+                button_color = BUTTON_O_COLOR
             else:
-                button_color = None # Default color for empty spots
+                button_color = BUTTON_DEFAULT_COLOR # Default color for empty spots
 
-            buttons[i].config(text=button_text if button_text.isalpha() else "", 
+            buttons[i].config(text=button_text if button_text.isalpha() else "",
                               state=tk.NORMAL if board[i].isdigit() else tk.DISABLED,
-                              fg=button_color)
+                              fg=GUI_FG_COLOR,  # Ensure text color is consistent
+                              bg=button_color)
+        
         label_player.config(text=f"Player {current_player}'s Turn")
         window.update_idletasks()
 
@@ -99,27 +129,29 @@ def play_game(board_size):
     buttons = []
 
     def restart_game_callback():
+        """Destroys the current window and starts a new game."""
         nonlocal window
         if window:
             window.destroy()
         play_game(board_size)
 
     def handle_move(move_index):
+        """Handles a player's move, updates the board, checks for win/tie, and switches players."""
         nonlocal board, current_player, game_is_running, window, update_display, label_player, buttons
 
         if game_is_running and board[move_index].isdigit():
             board[move_index] = current_player
             
             # Update button appearance based on player
-            button_color = "green" if current_player == "X" else "blue"
-            buttons[move_index].config(text=current_player, state=tk.DISABLED, fg=button_color)
+            button_color = BUTTON_X_COLOR if current_player == "X" else BUTTON_O_COLOR
+            buttons[move_index].config(text=current_player, state=tk.DISABLED, fg=GUI_FG_COLOR, bg=button_color)
 
             if check_win(board, current_player, board_size):
-                messagebox.showinfo("Game Over", f"Player {current_player} Wins!")
+                messagebox.showinfo("Game Over", f"Player {current_player} Wins!", parent=window)
                 game_is_running = False
                 
                 def ask_play_again():
-                    if messagebox.askyesno("Play Again?", "Do you want to play again?"):
+                    if messagebox.askyesno("Play Again?", "Do you want to play again?", parent=window):
                         window.destroy()
                         play_game(board_size)
                     else:
@@ -128,11 +160,11 @@ def play_game(board_size):
                 ask_play_again()
 
             elif check_tie(board):
-                messagebox.showinfo("Game Over", "It's a Tie!")
+                messagebox.showinfo("Game Over", "It's a Tie!", parent=window)
                 game_is_running = False
                 
                 def ask_play_again():
-                    if messagebox.askyesno("Play Again?", "Do you want to play again?"):
+                    if messagebox.askyesno("Play Again?", "Do you want to play again?", parent=window):
                         window.destroy()
                         play_game(board_size)
                     else:
@@ -146,28 +178,37 @@ def play_game(board_size):
                 
     window, update_display, buttons, label_player = create_gui(board_size, board, current_player, game_is_running, handle_move, restart_game_callback)
     
-    # Initial display update for the buttons
+    # Initial display update for the buttons based on any pre-filled board (not applicable here but good practice)
     for i in range(board_size * board_size):
         if board[i].isalpha():
-            button_color = "green" if board[i] == "X" else "blue"
-            buttons[i].config(text=board[i], fg=button_color, state=tk.DISABLED)
+            button_color = BUTTON_X_COLOR if board[i] == "X" else BUTTON_O_COLOR
+            buttons[i].config(text=board[i], fg=GUI_FG_COLOR, bg=button_color, state=tk.DISABLED)
         else:
-            buttons[i].config(text="")
+            buttons[i].config(text="", bg=BUTTON_DEFAULT_COLOR)
 
     window.mainloop()
 
 def get_board_size_from_user():
-    """Prompts the user for the board size and validates it."""
+    """Prompts the user for the board size and validates it, using Tkinter for input."""
+    dialog = tk.Tk()
+    dialog.withdraw() # Hide the main window
+
     while True:
         try:
-            size_str = input("Enter board size (e.g., 3 for 3x3, 4 for 4x4): ")
+            size_str = dialog.prompt(title="Board Size", prompt="Enter board size (e.g., 3 for 3x3, 4 for 4x4):", initialvalue="3")
+            if size_str is None: # User cancelled
+                sys.exit()
             size = int(size_str)
             if size < 3:
-                print("Board size must be at least 3x3.")
+                messagebox.showerror("Invalid Input", "Board size must be at least 3x3.", parent=dialog)
             else:
+                dialog.destroy()
                 return size
         except ValueError:
-            print("Invalid input. Please enter a number.")
+            messagebox.showerror("Invalid Input", "Invalid input. Please enter a number.", parent=dialog)
+        except tk.TclError: # Handle case where prompt might fail (e.g., no display)
+            print("Error: Could not display input prompt. Please ensure you are running in an environment with a display.")
+            sys.exit(1)
 
 def main():
     """Main function to get board size and start the game."""
