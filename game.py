@@ -46,6 +46,10 @@ def get_player_move(board, player):
         except ValueError:
             print("⚠️  Invalid input. Please enter a number.")
 
+def power(a, b):
+    """Calculates the power of a number."""
+    return a ** b
+
 def main():
     """Main function to run the Tic Tac Toe game loop."""
     board = [str(i) for i in range(1, 10)]
