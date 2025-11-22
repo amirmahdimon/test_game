@@ -190,25 +190,35 @@ def play_game(board_size):
 
 def get_board_size_from_user():
     """Prompts the user for the board size and validates it, using Tkinter for input."""
-    dialog = tk.Tk()
-    dialog.withdraw() # Hide the main window
+    dialog_root = tk.Tk()
+    dialog_root.withdraw() # Hide the main window
 
     while True:
         try:
-            size_str = dialog.prompt(title="Board Size", prompt="Enter board size (e.g., 3 for 3x3, 4 for 4x4):", initialvalue="3")
+            # Use tk.simpledialog.askstring which is the correct way to get string input
+            from tkinter import simpledialog
+            size_str = simpledialog.askstring("Board Size", "Enter board size (e.g., 3 for 3x3, 4 for 4x4):", parent=dialog_root, initialvalue="3")
+            
             if size_str is None: # User cancelled
+                dialog_root.destroy()
                 sys.exit()
             size = int(size_str)
             if size < 3:
-                messagebox.showerror("Invalid Input", "Board size must be at least 3x3.", parent=dialog)
+                messagebox.showerror("Invalid Input", "Board size must be at least 3x3.", parent=dialog_root)
             else:
-                dialog.destroy()
+                dialog_root.destroy()
                 return size
         except ValueError:
-            messagebox.showerror("Invalid Input", "Invalid input. Please enter a number.", parent=dialog)
+            messagebox.showerror("Invalid Input", "Invalid input. Please enter a number.", parent=dialog_root)
         except tk.TclError: # Handle case where prompt might fail (e.g., no display)
             print("Error: Could not display input prompt. Please ensure you are running in an environment with a display.")
+            dialog_root.destroy()
             sys.exit(1)
+        finally:
+            # Ensure the dialog root is destroyed if the loop exits for any reason other than sys.exit()
+            if dialog_root.winfo_exists():
+                dialog_root.destroy()
+
 
 def main():
     """Main function to get board size and start the game."""
