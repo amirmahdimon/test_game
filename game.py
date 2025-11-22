@@ -157,17 +157,32 @@ def play_game(board_size):
     window.mainloop()
 
 def get_board_size_from_user():
-    """Prompts the user for the board size and validates it."""
+    """Prompts the user for the board size using a Tkinter dialog and validates it."""
+    root = tk.Tk()
+    root.withdraw()  # Hide the main window
+
     while True:
         try:
-            size_str = input("Enter board size (e.g., 3 for 3x3, 4 for 4x4): ")
+            # Use tk.simpledialog for input dialogs
+            from tkinter import simpledialog
+            size_str = simpledialog.askstring("Board Size", "Enter board size (e.g., 3 for 3x3, 4 for 4x4):", parent=root)
+            
+            if size_str is None:  # User cancelled the dialog
+                root.destroy()
+                sys.exit()
+
             size = int(size_str)
             if size < 3:
-                print("Board size must be at least 3x3.")
+                messagebox.showerror("Invalid Input", "Board size must be at least 3x3.")
             else:
+                root.destroy()
                 return size
         except ValueError:
-            print("Invalid input. Please enter a number.")
+            messagebox.showerror("Invalid Input", "Invalid input. Please enter a number.")
+        except tk.TclError: # Handle cases where tkinter is not available or initialized
+             print("Tkinter is not fully available. Please run this script in an environment with a graphical display.")
+             sys.exit(1)
+
 
 def main():
     """Main function to get board size and start the game."""
