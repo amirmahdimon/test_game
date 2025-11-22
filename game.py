@@ -202,7 +202,6 @@ def get_board_size_from_user():
             size_str = simpledialog.askstring("Board Size", "Enter board size (e.g., 3 for 3x3, 4 for 4x4):", parent=dialog_root, initialvalue="3")
             
             if size_str is None: # User cancelled
-                # Destroy the dialog root before exiting
                 if dialog_root.winfo_exists():
                     dialog_root.destroy()
                 sys.exit()
@@ -210,7 +209,6 @@ def get_board_size_from_user():
             if size < 3:
                 messagebox.showerror("Invalid Input", "Board size must be at least 3x3.", parent=dialog_root)
             else:
-                # Destroy the dialog root before returning
                 if dialog_root.winfo_exists():
                     dialog_root.destroy()
                 return size
@@ -218,13 +216,12 @@ def get_board_size_from_user():
             messagebox.showerror("Invalid Input", "Invalid input. Please enter a number.", parent=dialog_root)
         except tk.TclError: # Handle case where prompt might fail (e.g., no display)
             print("Error: Could not display input prompt. Please ensure you are running in an environment with a display.")
-            # Destroy the dialog root if it exists
             if dialog_root.winfo_exists():
                 dialog_root.destroy()
             sys.exit(1)
         finally:
-            # Ensure the dialog root is destroyed if the loop exits for any reason other than sys.exit()
-            # This check is critical to prevent the TclError when the window is destroyed before winfo_exists is called
+            # Ensure the dialog root is destroyed if the loop exits or if an error occurred
+            # before the standard return path.
             if dialog_root and dialog_root.winfo_exists():
                 dialog_root.destroy()
 
