@@ -2,13 +2,13 @@ def print_board(board):
     """Prints the 3x3 tic-tac-toe board with a more detailed design."""
     print("\n")
     print("    1   2   3")
-    print("  ╔═══╦═══╦═══╗")
-    print(f"A ║ {board[0]} ║ {board[1]} ║ {board[2]} ║")
-    print("  ╠═══╬═══╬═══╣")
-    print(f"B ║ {board[3]} ║ {board[4]} ║ {board[5]} ║")
-    print("  ╠═══╬═══╣")
-    print(f"C ║ {board[6]} ║ {board[7]} ║ {board[8]} ║")
-    print("  ╚═══╩═══╩═══╝")
+    print("  ╭───┬───┬───╮")
+    print(f"A │ {board[0]} │ {board[1]} │ {board[2]} │")
+    print("  ├───┼───┼───┤")
+    print(f"B │ {board[3]} │ {board[4]} │ {board[5]} │")
+    print("  ├───┼───┼───┤")
+    print(f"C │ {board[6]} │ {board[7]} │ {board[8]} │")
+    print("  ╰───┴───┴───╯")
     print("\n")
 
 def check_win(board, player):
@@ -65,9 +65,9 @@ def main():
     current_player = "X"
     game_is_running = True
 
-    print("\n" + "="*30)
+    print("\n" + "═" * 30)
     print("     WELCOME TO TIC TAC TOE")
-    print("="*30 + "\n")
+    print("═" * 30 + "\n")
 
     while game_is_running:
         print_board(board)
@@ -77,19 +77,19 @@ def main():
 
         if check_win(board, current_player):
             print_board(board)
-            print("\n" + "*"*30)
-            print("*          GAME OVER          *")
+            print("\n" + "═" * 30)
+            print("          GAME OVER")
             win_message = f"PLAYER {current_player} WINS! 🎉"
-            print(f"* {win_message:^26} *")
-            print("*"*30)
+            print(f"{win_message:^30}")
+            print("═" * 30)
             game_is_running = False
         elif check_tie(board):
             print_board(board)
-            print("\n" + "*"*30)
-            print("*          GAME OVER          *")
+            print("\n" + "═" * 30)
+            print("          GAME OVER")
             tie_message = "IT'S A TIE!"
-            print(f"* {tie_message:^26} *")
-            print("*"*30)
+            print(f"{tie_message:^30}")
+            print("═" * 30)
             game_is_running = False
         else:
             # Switch to the other player
