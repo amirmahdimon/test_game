@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, simpledialog
 import sys
 
 # ANSI color codes (not directly used in GUI but good for context)
@@ -131,7 +131,7 @@ def play_game(board_size):
     def restart_game_callback():
         """Destroys the current window and starts a new game."""
         nonlocal window
-        if window:
+        if window and window.winfo_exists():
             window.destroy()
         play_game(board_size)
 
@@ -152,10 +152,12 @@ def play_game(board_size):
                 
                 def ask_play_again():
                     if messagebox.askyesno("Play Again?", "Do you want to play again?", parent=window):
-                        window.destroy()
+                        if window and window.winfo_exists():
+                            window.destroy()
                         play_game(board_size)
                     else:
-                        window.destroy()
+                        if window and window.winfo_exists():
+                            window.destroy()
                         sys.exit()
                 ask_play_again()
 
@@ -165,10 +167,12 @@ def play_game(board_size):
                 
                 def ask_play_again():
                     if messagebox.askyesno("Play Again?", "Do you want to play again?", parent=window):
-                        window.destroy()
+                        if window and window.winfo_exists():
+                            window.destroy()
                         play_game(board_size)
                     else:
-                        window.destroy()
+                        if window and window.winfo_exists():
+                            window.destroy()
                         sys.exit()
                 ask_play_again()
 
@@ -195,28 +199,30 @@ def get_board_size_from_user():
 
     while True:
         try:
-            # Use tk.simpledialog.askstring which is the correct way to get string input
-            from tkinter import simpledialog
             size_str = simpledialog.askstring("Board Size", "Enter board size (e.g., 3 for 3x3, 4 for 4x4):", parent=dialog_root, initialvalue="3")
             
             if size_str is None: # User cancelled
-                dialog_root.destroy()
+                if dialog_root and dialog_root.winfo_exists():
+                    dialog_root.destroy()
                 sys.exit()
             size = int(size_str)
             if size < 3:
                 messagebox.showerror("Invalid Input", "Board size must be at least 3x3.", parent=dialog_root)
             else:
-                dialog_root.destroy()
+                if dialog_root and dialog_root.winfo_exists():
+                    dialog_root.destroy()
                 return size
         except ValueError:
             messagebox.showerror("Invalid Input", "Invalid input. Please enter a number.", parent=dialog_root)
         except tk.TclError: # Handle case where prompt might fail (e.g., no display)
             print("Error: Could not display input prompt. Please ensure you are running in an environment with a display.")
-            dialog_root.destroy()
+            if dialog_root and dialog_root.winfo_exists():
+                dialog_root.destroy()
             sys.exit(1)
         finally:
             # Ensure the dialog root is destroyed if the loop exits for any reason other than sys.exit()
-            if dialog_root.winfo_exists():
+            # This check is critical to prevent the TclError when the window is destroyed before winfo_exists is called
+            if dialog_root and dialog_root.winfo_exists():
                 dialog_root.destroy()
 
 
