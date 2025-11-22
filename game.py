@@ -202,21 +202,24 @@ def get_board_size_from_user():
             size_str = simpledialog.askstring("Board Size", "Enter board size (e.g., 3 for 3x3, 4 for 4x4):", parent=dialog_root, initialvalue="3")
             
             if size_str is None: # User cancelled
-                if dialog_root and dialog_root.winfo_exists():
+                # Destroy the dialog root before exiting
+                if dialog_root.winfo_exists():
                     dialog_root.destroy()
                 sys.exit()
             size = int(size_str)
             if size < 3:
                 messagebox.showerror("Invalid Input", "Board size must be at least 3x3.", parent=dialog_root)
             else:
-                if dialog_root and dialog_root.winfo_exists():
+                # Destroy the dialog root before returning
+                if dialog_root.winfo_exists():
                     dialog_root.destroy()
                 return size
         except ValueError:
             messagebox.showerror("Invalid Input", "Invalid input. Please enter a number.", parent=dialog_root)
         except tk.TclError: # Handle case where prompt might fail (e.g., no display)
             print("Error: Could not display input prompt. Please ensure you are running in an environment with a display.")
-            if dialog_root and dialog_root.winfo_exists():
+            # Destroy the dialog root if it exists
+            if dialog_root.winfo_exists():
                 dialog_root.destroy()
             sys.exit(1)
         finally:
